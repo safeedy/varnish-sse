@@ -3,11 +3,9 @@
 Start Project with :
 
     docker-compose up -d
-    
-Start server with :
 
-    docker exec -ti eventnode bash
-    > node server.js
+NPM dependencies will be installed
+Node server will be launched
     
 Run direct queries in 3 tabs at **localhost/stream** => 3 clients counted will be connected
 
