@@ -1,0 +1,39 @@
+version: "3"
+
+networks:
+  mainevent:
+
+services:
+  eventnode:
+    image: srvdocker.lequipe.net/aso/node:12.14.1
+    container_name: eventnode
+    stdin_open: true
+    tty: true
+    working_dir: /var/www/project
+    ports:
+      - "80:8080"
+    volumes:
+      - .:/var/www/project
+      - ~/.ssh:/home/node/.ssh:cached
+    networks:
+      mainevent:
+        aliases:
+          - "eventnode"
+
+  eventvarnish:
+    image: million12/varnish
+    container_name: eventvarnish
+    environment:
+        - VCL_CONFIG=/var/www/project/varnish.vcl
+    volumes:
+        - ./varnish.vcl:/var/www/project/varnish.vcl:cached
+    expose:
+        - 6085
+    ports:
+        - "8080:80"
+        - "6085:6085"
+    networks:
+        mainevent:
+            aliases:
+                - "eventvarnish"
+
