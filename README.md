@@ -7,6 +7,7 @@ Start Project with :
 Start server with :
 
     docker exec -ti eventnode bash
+    > node server.js
     
 Run direct queries in 3 tabs at **localhost/stream** => 3 clients counted will be connected
 
