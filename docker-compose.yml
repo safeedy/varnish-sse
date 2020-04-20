@@ -12,7 +12,7 @@ services:
     tty: true
     working_dir: /var/www/project
     ports:
-      - "80:8080"
+      - "3000:8080"
     volumes:
       - .:/var/www/project
       - ~/.ssh:/home/node/.ssh:cached
@@ -29,7 +29,7 @@ services:
     volumes:
         - ./varnish.vcl:/var/www/project/varnish.vcl:cached
     ports:
-        - "8180:80"
+        - "8080:80"
         - "6085:6085"
     networks:
         mainevent:
@@ -44,9 +44,23 @@ services:
     volumes:
         - ./varnishleaf.vcl:/var/www/project/varnishleaf.vcl:cached
     ports:
-        - "8080:80"
+        - "80:80"
     networks:
         mainevent:
             aliases:
                 - "varnishleaf"
+
+  varnishleaf1:
+    image: ubuntu-varnish:1.0
+    container_name: varnishleaf1
+    environment:
+        - VCL_CONFIG=/var/www/project/varnishleaf.vcl
+    volumes:
+        - ./varnishleaf.vcl:/var/www/project/varnishleaf.vcl:cached
+    ports:
+        - "90:80"
+    networks:
+        mainevent:
+            aliases:
+                - "varnishleaf1"
 
