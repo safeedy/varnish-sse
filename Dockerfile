@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 MAINTAINER Safidy Ambinintsoa <ambinintsoa.fs@gmail.com>
 
-RUN apt-get update && apt-get install -y varnish varnish-modules
+RUN apt-get update && apt-get install -y varnish varnish-modules curl
 
 ADD start.sh /start.sh
 
