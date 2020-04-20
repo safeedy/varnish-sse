@@ -1,8 +1,8 @@
 const express = require('express');
-const SSEChannel = require('sse-pubsub');
+const SSEChannel = require('./SSEChannel');
 
 const app = express();
-const channel = new SSEChannel();
+const channel = new SSEChannel({pingInterval: 0});
 
 let count = 1;
 // Say hello every second
@@ -11,7 +11,10 @@ setInterval(() => {
     count++;
 }, 5000);
 
-app.get('/stream', (req, res) => channel.subscribe(req, res));
+app.get('/stream', (req, res) => {
+    channel.subscribe(req, res);
+    channel.resetMetrics();
+});
 
 app.get('/std', (req, res) => {
     res.header('X-Custom-TTL', '30');

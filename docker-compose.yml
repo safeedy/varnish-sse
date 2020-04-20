@@ -22,19 +22,31 @@ services:
           - "eventnode"
 
   eventvarnish:
-    image: million12/varnish
+    image: ubuntu-varnish:1.0
     container_name: eventvarnish
     environment:
         - VCL_CONFIG=/var/www/project/varnish.vcl
     volumes:
         - ./varnish.vcl:/var/www/project/varnish.vcl:cached
-    expose:
-        - 6085
     ports:
-        - "8080:80"
+        - "8180:80"
         - "6085:6085"
     networks:
         mainevent:
             aliases:
                 - "eventvarnish"
+
+  varnishleaf:
+    image: ubuntu-varnish:1.0
+    container_name: varnishleaf
+    environment:
+        - VCL_CONFIG=/var/www/project/varnishleaf.vcl
+    volumes:
+        - ./varnishleaf.vcl:/var/www/project/varnishleaf.vcl:cached
+    ports:
+        - "8080:80"
+    networks:
+        mainevent:
+            aliases:
+                - "varnishleaf"
 
