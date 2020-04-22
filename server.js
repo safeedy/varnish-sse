@@ -2,7 +2,8 @@ const express = require('express');
 const SSEChannel = require('./SSEChannel');
 
 const app = express();
-const channel = new SSEChannel({pingInterval: 0});
+// max number of served clients = maxStreamDuration / cacheDuration
+const channel = new SSEChannel({maxStreamDuration: 30000, pingInterval: 0, clientRetryInterval: 5});
 
 let count = 1;
 // Say hello every second
@@ -13,7 +14,7 @@ setInterval(() => {
 
 app.get('/stream', (req, res) => {
     channel.subscribe(req, res);
-    channel.resetMetrics();
+    //channel.resetMetrics();
 });
 
 app.get('/std', (req, res) => {

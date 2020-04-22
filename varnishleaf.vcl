@@ -16,20 +16,20 @@ backend default {
 
 # important for event streams
 # 0 - make sure compression is disabled by origin
-# 1 - enable request collapsing by setting grace => only 1 request will be sent to origin, all other clients wait for it to be dispatched
+# 1 - enable request collapsing by setting ttl => only 1 request will be sent to origin, all other clients wait for it to be dispatched
 # 2 - enable do_stream for text/event-stream
-# 3 - time to live must be equal to max stream duration from origin => prevent from potential timeout in middle servers/proxies
+# 3 - ttl must be =< ttl varnish top < maxStreamDuration =======> number of clients serverd by origin = maxStreamDuration / ttl
 sub vcl_backend_response {
     if (bereq.url ~ "/stream") {
         if(var.global_get("stream_start") != "1") {
             # [a]: MISS - set ttl
-            set beresp.grace = 0s;
-            set beresp.ttl = 29s;
+            set beresp.grace = 1ms;
+            set beresp.ttl = 4500ms;
             set beresp.http.X-Grace-Set-Leaf = "YES";
         }
         if(beresp.http.X-Varnish-Cache-Top == "HIT" && var.global_get("stream_start") == "0") {
             # expire TTL to provoke a MISS and start over to [a]
-            set beresp.ttl = 1s;
+            set beresp.ttl = 20ms;
             var.global_set("stream_start", "0");
             set beresp.http.X-Grace-Set-Leaf = "NO";
         }
@@ -51,7 +51,7 @@ sub vcl_recv {
     var.global_set("stream_start", "0");
 
     # decrements the token
-    if(vsthrottle.is_denied(client.identity, 30, 60s)) {
+    if(vsthrottle.is_denied(client.identity, 300, 60s)) {
         # Client has more than 3 requests per min
         return (synth(429, "Too Many Requests In Flight"));
     }
@@ -59,7 +59,7 @@ sub vcl_recv {
 
 sub vcl_deliver {
 
-    set resp.http.X-RateLimit-Remaining = vsthrottle.remaining(client.identity, 30, 60s);
+    set resp.http.X-RateLimit-Remaining = vsthrottle.remaining(client.identity, 300, 60s);
     
     if(obj.hits > 0) {
         set resp.http.X-Varnish-Cache-Leaf = "HIT";

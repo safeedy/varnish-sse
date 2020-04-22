@@ -15,11 +15,12 @@ backend default {
 # important for event streams
 # 1 - enable request collapsing by setting grace => only 1 request will be sent to origin, all other clients wait for it to be dispatched
 # 2 - enable do_stream for text/event-stream
-# 3 - time to live must be equal to max stream duration from origin => prevent from potential timeout in middle servers/proxies
+# 3 - ttl varnish top < maxStreamDuration =======> number of clients serverd by origin = maxStreamDuration / ttl
 sub vcl_backend_response {
+
     if (bereq.url ~ "/stream") {
-        set beresp.grace = 29s;
-        set beresp.ttl = 29s;
+        set beresp.grace = 1ms;
+        set beresp.ttl = 5s;
         set beresp.http.X-Grace-Set-Top = "YES";
         set beresp.http.Cache-Control = "public, max-age=0";
     }
@@ -36,6 +37,7 @@ sub vcl_backend_response {
 # Varnish will not cache if a cookie is set
 sub vcl_recv {
     unset req.http.Cookie;
+    unset req.http.Last-Event-ID;
 }
 
 sub vcl_deliver {

@@ -63,7 +63,7 @@ module.exports = class SSEChannel {
 		const c = {req, res, events};
 		c.req.socket.setNoDelay(true);
 		c.res.writeHead(200, {
-            "Content-Type": "text/event-stream",
+			"Content-Type": "text/event-stream",
 			"Cache-Control": "s-maxage="+(Math.floor(this.options.maxStreamDuration/1000)-1)+"; max-age=0; stale-while-revalidate=0; stale-if-error=0",
 			"Connection": "keep-alive"
 		});
