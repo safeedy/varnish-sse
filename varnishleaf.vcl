@@ -51,15 +51,15 @@ sub vcl_recv {
     var.global_set("stream_start", "0");
 
     # decrements the token
-    if(vsthrottle.is_denied(client.identity, 300, 60s)) {
-        # Client has more than 3 requests per min
-        return (synth(429, "Too Many Requests In Flight"));
-    }
+    #if(vsthrottle.is_denied(client.identity, 300, 60s)) {
+        ## Client has more than 3 requests per min
+        #return (synth(429, "Too Many Requests In Flight"));
+    #}
 }
 
 sub vcl_deliver {
 
-    set resp.http.X-RateLimit-Remaining = vsthrottle.remaining(client.identity, 300, 60s);
+    #set resp.http.X-RateLimit-Remaining = vsthrottle.remaining(client.identity, 300, 60s);
     
     if(obj.hits > 0) {
         set resp.http.X-Varnish-Cache-Leaf = "HIT";

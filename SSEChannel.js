@@ -1,4 +1,5 @@
 const Buffer = require('buffer').Buffer;
+const fs = require('fs');
 
 module.exports = class SSEChannel {
 
@@ -67,7 +68,9 @@ module.exports = class SSEChannel {
 			"Cache-Control": "s-maxage="+(Math.floor(this.options.maxStreamDuration/1000)-1)+"; max-age=0; stale-while-revalidate=0; stale-if-error=0",
 			"Connection": "keep-alive"
 		});
-		let body = "retry: " + this.options.clientRetryInterval + '\n\n';
+		let fileContent = fs.readFileSync('content.json');
+		let body = "retry: " + this.options.clientRetryInterval + "\n" +
+					"data: " + fileContent + "\n\n";
 
 		const lastID = Number.parseInt(req.headers['last-event-id'], 10);
 		const rewind = (!Number.isNaN(lastID)) ? ((this.nextID-1)-lastID) : this.options.rewind;

@@ -44,6 +44,7 @@ sub vcl_deliver {
     
     if(obj.hits > 0) {
         set resp.http.X-Varnish-Cache-Top = "HIT";
+        set resp.http.X-Cache-Hits-Top = obj.hits;
     } else {
         set resp.http.X-Varnish-Cache-Top = "MISS";
     }
